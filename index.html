@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>My Reel Downloader</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+    }
+
+    .box {
+      width: 100%;
+      max-width: 450px;
+      background: white;
+      padding: 30px 22px;
+      border-radius: 22px;
+      text-align: center;
+      box-shadow: 0 15px 40px rgba(0,0,0,.25);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+    }
+
+    p {
+      color: #666;
+      line-height: 1.5;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px;
+      margin: 15px 0 10px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      border: 0;
+      border-radius: 10px;
+      background: #111;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    #message {
+      margin-top: 15px;
+      color: #555;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+
+    <h1>My Reel Downloader</h1>
+
+    <p>
+      Apni authorized Instagram Reel ka link paste karein.
+    </p>
+
+    <input
+      id="url"
+      type="url"
+      placeholder="Paste Reel URL"
+    >
+
+    <button onclick="downloadReel()">
+      Download
+    </button>
+
+    <div id="message"></div>
+
+  </div>
+
+  <script>
+    async function downloadReel() {
+
+      const url = document.getElementById("url").value.trim();
+      const message = document.getElementById("message");
+
+      if (!url) {
+        message.textContent = "Please Reel URL paste karein.";
+        return;
+      }
+
+      message.textContent = "Processing...";
+
+      try {
+
+        const response = await fetch("/api/download", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ url })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Download failed");
+        }
+
+        message.innerHTML =
+          `<a href="${data.downloadUrl}" download>
+             Download File
+           </a>`;
+
+      } catch (error) {
+
+        message.textContent = error.message;
+
+      }
+    }
+  </script>
+
+</body>
+</html>
